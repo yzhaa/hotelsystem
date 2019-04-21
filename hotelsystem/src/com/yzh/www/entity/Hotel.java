@@ -1,6 +1,6 @@
 package com.yzh.www.entity;
 
-import com.yzh.www.service.ManagerServiceImpl;
+import com.yzh.www.serviceImpl.ManagerServiceImpl;
 import javafx.beans.property.SimpleStringProperty;
 
 public class Hotel {
@@ -10,7 +10,6 @@ public class Hotel {
     private String info;
     private Manager manager;
     private int managerId;
-    private String managerAccont;
     private SimpleStringProperty nameProperty;
     private SimpleStringProperty typeProperty;
     private SimpleStringProperty infoProperty;
@@ -52,15 +51,13 @@ public class Hotel {
         infoProperty = new SimpleStringProperty(info);
     }
 
-    public boolean judgeAccont(String managerAccont){
+    private void judgeAccont(String managerAccont){
         if (!managerAccont.equals("")) {
             this.manager = new ManagerServiceImpl().findManaByAccont(Integer.parseInt(managerAccont));
             if(manager!=null){
                 this.managerId = manager.getId();
-                return true;
             }
         }
-        return false;
     }
 
     public int getId() {
@@ -74,6 +71,12 @@ public class Hotel {
     public String getName() {
 
         return name;
+    }
+
+    public void setManagerAccont(String managerAccont) {
+       if( !managerAccont.equals("")){
+           this.manager= new ManagerServiceImpl().findManaByAccont(Integer.parseInt(managerAccont));
+       }
     }
 
     public Manager getManager() {
@@ -90,12 +93,6 @@ public class Hotel {
 
     public void setInfo(String info) {
         this.info = info;
-    }
-
-
-    public void setManagerAccont(String managerAccont) {
-        judgeAccont(managerAccont);
-        this.managerAccont = managerAccont;
     }
 
     public int getManagerId() {
@@ -135,8 +132,8 @@ public class Hotel {
 
     @Override
     public boolean equals(Object hotel) {
-        if (hotel != null && this.getId()==(((Hotel)hotel).getId())) {
-            return true;
+        if(hotel instanceof Hotel){
+            return  this.getId()==(((Hotel)hotel).getId());
         }
         return false;
     }

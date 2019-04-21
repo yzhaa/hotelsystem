@@ -1,6 +1,7 @@
 package com.yzh.www.entity;
 
-import com.yzh.www.service.CustomServiceImpl;
+import com.yzh.www.factory.ServiceFactory;
+import com.yzh.www.service.CustomService;
 import com.yzh.www.util.Constant;
 
 import java.text.SimpleDateFormat;
@@ -32,14 +33,14 @@ public class Order {
 }
 
     public void continueInit(){
-        CustomServiceImpl csi = new CustomServiceImpl();
+        CustomService csi = ServiceFactory.getCustomService();
         this.room = csi.findRoom(roomId);
         this.customer = csi.findCustomerById(customerId);
         this.hotel = csi.findHotelByRoom(roomId);
         Iterator ite = csi.findCusSer(roomId, customerId).iterator();
-        services = new ArrayList<Service>();
+        services = new ArrayList<>();
         for(;ite.hasNext();){
-            int i = ((Integer) ite.next()).intValue();
+            int i = ((Integer) ite.next());
             Service service=(csi.findService(i));
             price += service.getPrice() * duration;
             services.add(service);
@@ -82,7 +83,7 @@ public class Order {
     }
 
 
-    public StringBuilder servicesList(){
+    private StringBuilder servicesList(){
         Iterator ite = services.iterator();
         StringBuilder sb = new StringBuilder();
         for(;ite.hasNext();){

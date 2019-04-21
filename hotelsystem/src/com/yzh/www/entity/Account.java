@@ -1,7 +1,7 @@
 package com.yzh.www.entity;
 
-import com.yzh.www.service.BaseServiceImpl;
-import com.yzh.www.service.CustomServiceImpl;
+import com.yzh.www.serviceImpl.BaseServiceImpl;
+import com.yzh.www.serviceImpl.CustomServiceImpl;
 
 import java.util.Date;
 
@@ -47,29 +47,10 @@ public class Account {
         this.room = room;
     }
 
-    public Customer getCustomer() {
-        return customer;
-    }
-
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
     public int getMoney() {
         return money;
     }
 
-    public void setMoney(int money) {
-        this.money = money;
-    }
 
     @Override
     public String toString() {

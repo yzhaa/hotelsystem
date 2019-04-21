@@ -1,7 +1,7 @@
 package com.yzh.www.entity;
 
 
-import com.yzh.www.service.CustomServiceImpl;
+import com.yzh.www.factory.ServiceFactory;
 import javafx.beans.property.SimpleStringProperty;
 
 /**
@@ -11,13 +11,10 @@ import javafx.beans.property.SimpleStringProperty;
 public class Room {
     private int id;
     private Hotel hotel;
-    private int customerId;
-    private Customer customer;
     private String name;
     private String type;
     private String info;
     private int price;
-    private String sPrice;
     private SimpleStringProperty nameProperty;
     private SimpleStringProperty typeProperty;
     private SimpleStringProperty infoProperty;
@@ -26,10 +23,9 @@ public class Room {
     public Room() {
     }
 
-    public Room(int id, Hotel hotel, int customerId,String name, String type, String info, int price) {
+    public Room(int id,int hotelid ,int customerid,String name, String type, String info, int price) {
         this.id = id;
-        this.hotel = hotel;
-        this.customerId = customerId;
+        this.hotel = ServiceFactory.getBaseService().findHotel(hotelid);
         this.name = name;
         this.type = type;
         this.info = info;
@@ -49,7 +45,6 @@ public class Room {
     }
 
     public void continueInit(){
-        this.customer = new CustomServiceImpl().findCustomerById(customerId);
         nameProperty = new SimpleStringProperty(name);
         typeProperty = new SimpleStringProperty(type);
         infoProperty = new SimpleStringProperty(info);
@@ -69,18 +64,6 @@ public class Room {
         this.hotel = hotel;
     }
 
-    public Customer getCustomer() {
-        return customer;
-    }
-
-    public String getsPrice() {
-        return sPrice;
-    }
-
-    public void setsPrice(String sPrice) {
-        this.sPrice = sPrice;
-    }
-
     public String getType() {
         return type;
     }
@@ -95,6 +78,11 @@ public class Room {
 
     public void setInfo(String info) {
         this.info = info;
+    }
+
+    public void setPrice(String price) {
+        if(!price.equals(""))
+        this.price = Integer.parseInt(price);
     }
 
     public int getPrice() {

@@ -1,6 +1,6 @@
 package com.yzh.www.view;
 
-import com.yzh.www.controller.ControlActionImpl;
+import com.yzh.www.manger.MangerImpl;
 import com.yzh.www.entity.User;
 import com.yzh.www.util.MyAlert;
 import com.yzh.www.util.MyTextField;
@@ -15,32 +15,32 @@ import Storage.UserStorage;
 
 public class ChangeInfoView {
     private UserStorage userStorage;
-    private ControlActionImpl controlAction;
+    private MangerImpl controlAction;
     private TextField[] textFields;
-    private Stage stage;
 
-    public ChangeInfoView(UserStorage userStorage) {
+    ChangeInfoView(UserStorage userStorage) {
         this.userStorage = userStorage;
     }
 
-    public Stage addStage() {
+     Stage addStage() {
         User user = userStorage.getUser();
         Stage stage = new Stage();
         GridPane gp = new GridPane();
         Scene scene = new Scene(gp);
         Button button = new Button("确认");
-        Label lables[] = {new Label("用户名"), new Label("手机号"), new Label("身份证"), new Label("密码")};
-        TextField tfs[] = {new TextField(), MyTextField.phoneNumberTextField(), MyTextField.idCardTextFile(),
+        Label[] lables = {new Label("用户名"), new Label("手机号"), new Label("身份证"), new Label("密码")};
+        TextField[] tfs = {new TextField(), MyTextField.phoneNumberTextField(), MyTextField.idCardTextFile(),
                 MyTextField.passwordTextFiled()};
         tfs[0].setText(user.getUserName());
         tfs[1].setText(user.getPhoneNumber());
         tfs[2].setText(user.getIdCard());
         textFields = tfs;
         button.setOnAction((ActionEvent e) -> {
-            controlAction = new ControlActionImpl();
-            if (controlAction.changeInfo(this)) {
-                MyAlert.setAlert("修改成功", 1);
-                stage.close();
+            controlAction = new MangerImpl();
+            switch (controlAction.changeInfo(this)) {
+                case 1: MyAlert.setAlert("请填入正确的格式", 0);break;
+                case 2:MyAlert.setAlert("请填入完整",0);break;
+                case 3:MyAlert.setAlert("修改成功", 1);stage.close();break;
             }
         });
 

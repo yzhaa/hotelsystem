@@ -1,10 +1,11 @@
 package com.yzh.www.view;
 
-import com.yzh.www.controller.ControlAction;
-import com.yzh.www.controller.ControlActionImpl;
+import com.yzh.www.manger.Manger;
+import com.yzh.www.manger.MangerImpl;
 import com.yzh.www.entity.Order;
 import com.yzh.www.entity.Room;
 import com.yzh.www.entity.Service;
+import com.yzh.www.util.MyAlert;
 import com.yzh.www.util.MyTextField;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -23,11 +24,10 @@ import Storage.MangerStorage;
 
 
 public class ManagerView {
-    private ControlAction controlAction;
-    private TableView tableView;
-    private ListView listViewOrder;
-    private ListView listViewPoint;
-    private ListView listViewService;
+    private Manger manger;
+    private TableView<Room> tableView;
+    private ListView<Order> listViewOrder;
+    private ListView<Service> listViewService;
     private TextField priceTf;
     private TextField contenceTf;
     private TextField nameTf;
@@ -35,22 +35,21 @@ public class ManagerView {
 
 
     public ManagerView() {
-        this.controlAction = new ControlActionImpl();
+        this.manger = new MangerImpl();
     }
 
-    public MenuBar creatMenuBar(){
+    private MenuBar creatMenuBar(){
         MenuBar mb = new MyMenuBar().creatMenuBar();
         MenuItem mi3 = new MenuItem("查看评分");
         mb.getMenus().get(0).getItems().add(mi3);
-        mb.getMenus().get(0).getItems().get(0).setOnAction((ActionEvent e)->{
-            new  ChangeInfoView(new MangerStorage()).addStage().show();
-        });
-        mb.getMenus().get(0).getItems().get(1).setOnAction((ActionEvent e)->{
-            new  AccountView().creatStage(2).show();
-        });
-        mb.getMenus().get(0).getItems().get(2).setOnAction((ActionEvent e)->{
-            addCommentStage();
-        });
+        mb.getMenus().get(0).getItems().get(0).setOnAction((ActionEvent e)->
+            new  ChangeInfoView(new MangerStorage()).addStage().show());
+
+        mb.getMenus().get(0).getItems().get(1).setOnAction((ActionEvent e)->
+            new  AccountView().creatStage(2).show());
+
+        mb.getMenus().get(0).getItems().get(2).setOnAction((ActionEvent e)->
+            addCommentStage());
 
         return mb;
     }
@@ -71,7 +70,7 @@ public class ManagerView {
     }
 
 
-    public HBox creatHBox(){
+    private HBox creatHBox(){
         HBox hBox = new HBox();
         ImageView imageView=new ImageView(new Image("\\Image\\manager.jpg"));
         imageView.setFitWidth(100);
@@ -83,7 +82,7 @@ public class ManagerView {
         return hBox;
     }
 
-    public Stage changeRoom(Room room){
+    private Stage changeRoom(Room room){
         Stage stage=new Stage();
         GridPane gp = new GridPane();
         Scene scene = new Scene(gp);
@@ -101,15 +100,21 @@ public class ManagerView {
         Label la3 = new Label("信息");
         Label la4 = new Label("价格");
         button.setOnAction((ActionEvent e)->{
-            controlAction = new ControlActionImpl();
+            manger = new MangerImpl();
             room.setName(tfname.getText());
-            room.setsPrice(tfprice.getText());
+            room.setPrice(tfprice.getText());
             room.setInfo(tfinfo.getText());
             room.setType(tftype.getText());
-           if( controlAction.changeRoom(room, 1))
-               stage.close();
+               if(manger.changeRoom(room, 1)==1){
+                   MyAlert.setAlert("请修改完整",0);
+               }
+               else {
+                   MyAlert.setAlert("修改成功",1);
+                   stage.close();
+               }
             updateTv();
         });
+
         gp.setAlignment(Pos.CENTER);
         gp.setPadding(new Insets(20));
         gp.setHgap(10);
@@ -123,14 +128,14 @@ public class ManagerView {
         return stage;
     }
 
-    public TableView creatTableView(){
+    private TableView creatTableView(){
         MyTable myTable = new MyTable();
-        TableView tv = myTable.roomTV();
-        TableColumn<Room, String> tc = myTable.roomDTC(this);
+        TableView<Room> tv = myTable.roomTV();
+        TableColumn<Room,Button> tc = myTable.roomDTC(this);
         tableView = tv;
         tableView.setOnMouseClicked(event -> {
             if(event.getClickCount()==2){
-                changeRoom((Room) tv.getSelectionModel().getSelectedItem()).show();
+                changeRoom( tv.getSelectionModel().getSelectedItem()).show();
             }
         });
         tv.setPrefWidth(520);
@@ -140,7 +145,7 @@ public class ManagerView {
         return tv;
     }
 
-    public VBox addVRoomVBox() {
+    private VBox addVRoomVBox() {
         VBox vBox = new VBox(20);
         HBox hBox = new HBox();
         TextField addstyle = new TextField();
@@ -163,9 +168,9 @@ public class ManagerView {
             addinfo.clear();
             addprice.clear();
             addstyle.clear();
-            if(controlAction.changeRoom(room, 3)){
-                tableView.getItems().add(room);
-            }
+            if(manger.changeRoom(room, 3)==4){
+                MyAlert.setAlert("请输入完整",0);
+            }else tableView.getItems().add(room);
         });
         vBox.setPadding(new Insets(25, 20, 20, 20));
         hBox.getChildren().addAll(addButton, addname, addstyle,addinfo, addprice);
@@ -173,29 +178,36 @@ public class ManagerView {
         return vBox;
     }
 
-    public VBox addVSeviceVBox() {
+    private VBox addVSeviceVBox() {
         HBox hBox2 = new HBox();
         Button button1 = new Button("删除服务");
         Button button2 = new Button("添加服务");
         VBox vBox = new VBox();
         Label label = new Label("酒店服务:");
-        listViewService = new ListView();
+        listViewService = new ListView<>();
         button1.setMaxWidth(70);
         button1.setFont(Font.font(11));
         button1.setMaxWidth(70);
         button1.setOnAction((ActionEvent e) -> {
-            controlAction.deleteService(((Service) listViewService.getSelectionModel().getSelectedItem()));
+            switch (manger.deleteService(( listViewService.getSelectionModel().getSelectedItem()))) {
+                case 0:MyAlert.setAlert("请选择要删除的服务",0);
+                    break;
+                case 1:MyAlert.setAlert("删除成功",1);
+                    break;
+                case 2:MyAlert.setAlert("该服务有客户在使用",0);
+                    break;
+            }
             updateService();
         });
-        button2.setOnAction((ActionEvent e) -> {
-            changeService(null, 2);
-        });
+
+        button2.setOnAction((ActionEvent e) ->
+            changeService(null, 2));
 
         listViewService.setMaxWidth(180);
         listViewService.setMaxHeight(220);
         listViewService.setOnMouseClicked(event ->{
             if(event.getClickCount()==2){
-                changeService((Service) listViewService.getSelectionModel().getSelectedItem(), 1);
+                changeService( listViewService.getSelectionModel().getSelectedItem(), 1);
             }
         } );
 
@@ -205,16 +217,16 @@ public class ManagerView {
         return vBox;
     }
 
-    public  VBox addOrderVBox(){
+    private   VBox addOrderVBox(){
         HBox hBox = new HBox();
         Button button = new Button("删除订单");
         VBox vBox = new VBox();
         Label label = new Label("顾客订单:");
-        listViewOrder = new ListView();
+        listViewOrder = new ListView<>();
         listViewOrder.setMaxWidth(180);
         listViewOrder.setMaxHeight(220);
         button.setOnAction((ActionEvent e)->{
-            controlAction.deleteOrder((Order) listViewOrder.getSelectionModel().getSelectedItem());
+            manger.deleteOrder( listViewOrder.getSelectionModel().getSelectedItem());
             updateLVS();
         });
 
@@ -226,13 +238,13 @@ public class ManagerView {
     }
 
 
-    public void addCommentStage(){
+    private void addCommentStage(){
         Stage stage = new Stage();
         MyPointVBox mpvb = new MyPointVBox();
         VBox vBox =mpvb .creatPointVBox();
-        listViewPoint = mpvb.getListView();
+        ListView<TextArea> listViewPoint = mpvb.getListView();
         Scene scene = new Scene(vBox);
-        listViewPoint.setItems(FXCollections.observableList(controlAction.loadComment()));
+        listViewPoint.setItems(FXCollections.observableList(manger.loadComment(1,0)));
         stage.setTitle("评价");
         stage.setScene(scene);
         stage.show();
@@ -240,8 +252,8 @@ public class ManagerView {
 
 
 
-    public void changeService(Service service,int choice){
-        priceTf = MyTextField.accontTextField();
+    private void changeService(Service service,int choice){
+        priceTf = MyTextField.priceField();
         contenceTf = new TextField();
         nameTf = new TextField();
         stage = new Stage();
@@ -263,11 +275,16 @@ public class ManagerView {
         }
 
         btn.setOnAction(ActionEvent->{
-            if (controlAction.changeService(nameTf.getText(), priceTf.getText(),
+            if (manger.changeService(nameTf.getText(), priceTf.getText(),
                     contenceTf.getText(), choice, service)) {
+                if(choice==1){
+                    MyAlert.setAlert("修改成功",1);
+                }
+                else MyAlert.setAlert("添加成功",1);
                 updateService();
                 stage.close();
             }
+            else MyAlert.setAlert("请输入完整信息",0);
         });
 
         hBox1.getChildren().addAll(la1, nameTf);
@@ -286,22 +303,22 @@ public class ManagerView {
 
 
 
-    public void updateAll(){
+    void updateAll(){
         updateTv();
         updateLVS();
         updateService();
     }
 
-    public void updateTv(){
-        tableView.setItems(FXCollections.observableList(controlAction.loadRoomByManager()));
+    private void updateTv(){
+        tableView.setItems(FXCollections.observableList(manger.loadRoomByManager()));
     }
 
-    public void updateLVS(){
-        listViewOrder.setItems(FXCollections.observableList(controlAction.loadOrder()));
+    private void updateLVS(){
+        listViewOrder.setItems(FXCollections.observableList(manger.loadOrder()));
     }
 
-    public void updateService(){
-       listViewService.setItems(FXCollections.observableList(controlAction.loadService()));
+    private void updateService(){
+       listViewService.setItems(FXCollections.observableList(manger.loadService(1,0)));
     }
 
 }

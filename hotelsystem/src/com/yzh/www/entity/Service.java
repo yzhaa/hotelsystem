@@ -1,6 +1,6 @@
 package com.yzh.www.entity;
 
-import com.yzh.www.service.BaseServiceImpl;
+import com.yzh.www.serviceImpl.BaseServiceImpl;
 
 /**
  * 服务对应的实体类
@@ -10,34 +10,31 @@ public class Service {
     private int id;
     private Hotel hotel;
     private String name;
-    private int price;
+    private Long price;
     private String content;
 
     public Service() {
     }
 
-    public Service(int id, int hotelId, String name, int price, String content) {
+    public Service(int id, String name, Long price, String content, int hotelId) {
         this.id = id;
-        this.hotel =new BaseServiceImpl().findHotel(hotelId);
+        this.hotel = new BaseServiceImpl().findHotel(hotelId);
         this.name = name;
         this.price = price;
         this.content = content;
     }
 
-    public int getPrice() {
+
+    public Long getPrice() {
         return price;
     }
 
-    public void setPrice(int price) {
+    public void setPrice(Long price) {
         this.price = price;
     }
 
     public String getContent() {
         return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
     }
 
     public int getId() {

@@ -6,43 +6,43 @@ import java.util.ArrayList;
 
 public interface RoomDao {
 
-    public ArrayList<Room> findByHotelId(int id);
+    ArrayList<Room> findByHotelId(int id);
 
-    public Room findById(int id);
+    Room findById(int id);
 
     /**
-     *找酒店空房间
+     * 找酒店空房间
      */
-    public ArrayList<Room> findAllEmpty(int hotelid);
+    ArrayList<Room> findAllEmpty(int hotelid);
 
     /**
      *判断房间有没有住
      */
-    public boolean isEmpty(int id);
+     boolean isEmpty(int id);
 
     /**
      *插入一个顾客的进房间
      */
-    public boolean insertCustomer(int customerId,int roomId);
+     void insertCustomer(int customerId,int roomId);
 
     /**
      *从房间移除顾客
      */
-    public boolean removeCustomer(int id);
+     boolean removeCustomer(int id);
 
     /**
      *找到房间所对应酒店的id
      */
-    public int findHotelIdById(int id);
+     int findHotelIdById(int id);
 
-    public boolean updata(Room room);
+     void updata(Room room);
 
-    public boolean delete(int id);
+     boolean delete(int id);
 
     /**
      *删除酒店的房间
      */
-    public boolean deleteByHotelId(int hotelId);
+     boolean deleteByHotelId(int hotelId);
 
-    public boolean creat(Room room);
+     void creat(Room room);
 }

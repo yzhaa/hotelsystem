@@ -1,21 +1,15 @@
 package com.yzh.www.util;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.ConnectException;
+
+import com.yzh.www.db.MyDatabasePool;
 import java.sql.*;
-import java.util.Properties;
+
 
 /**
  * 用于对数据库的连接，以及关闭数据库
  */
 public class JDBCUtil {
-    private static String driver;
-    private static String url;
-    private static String user;
-    private static String password;
-    private static Connection conn=null;
+    private static MyDatabasePool myDatabasePool=new MyDatabasePool();
 
     public JDBCUtil() {
         super();
@@ -23,58 +17,50 @@ public class JDBCUtil {
 
     /**
      * 数据库的连接
+     *
      * @return 对数据库连接的 Connection对象
-     * @throws ConnectException
      */
-    public static Connection getConnection ()throws ConnectException {
-        try {
-            FileInputStream fis=new FileInputStream("resoures\\mysql.properties");
-            Properties properties=new Properties();
-            properties.load(fis);
-            driver=properties.getProperty("driver");
-            url=properties.getProperty("url");
-            user=properties.getProperty("user");
-            password=properties.getProperty("password");
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+    public static Connection getConnection() {
+        Connection con = myDatabasePool.getConnection();
+        if(con==null){
+            throw new NullPointerException("空的数据库连接对象");
         }
-
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-        try{
-            Class.forName(driver);
-            conn= DriverManager.getConnection(url,user,password);
-        }
-        catch (Exception e){
-            e.printStackTrace();
-            throw new RuntimeException("数据库连接失败");
-        }
-        return conn;
+        return con;
     }
 
-    /**
-     *关闭数据库连接以及数据库访问的相关东西
-     * @param rs
-     * @param ps
-     * @param conn
-     */
 
-    public static void close(ResultSet rs, PreparedStatement ps, Connection conn){
-        try{
-            if(rs!=null){
+    public static void close( ResultSet rs,PreparedStatement ps,Connection conn) {
+        try {
+            if (rs != null) {
                 rs.close();
             }
-            if (ps!=null){
+            if(ps!=null){
                 ps.close();
             }
             if(conn!=null){
-                conn.close();
+                myDatabasePool.FreeConnection(conn);
             }
-        }
-        catch (Exception e){
+        } catch (SQLException e) {
             e.printStackTrace();
         }
+
     }
+
+
+
+    public static void close(PreparedStatement ps,Connection conn){
+        try {
+            if(ps!=null){
+                ps.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        if (conn != null) {
+            myDatabasePool.FreeConnection(conn);
+        }
+    }
+
+
 }

@@ -1,7 +1,9 @@
 package com.yzh.www.view;
 
-import com.yzh.www.controller.ControlActionImpl;
-import com.yzh.www.service.CustomServiceImpl;
+import com.yzh.www.manger.MangerImpl;
+import com.yzh.www.entity.Room;
+import com.yzh.www.serviceImpl.CustomServiceImpl;
+import com.yzh.www.util.Constant;
 import com.yzh.www.util.MyAlert;
 import com.yzh.www.util.MyTextField;
 import javafx.collections.FXCollections;
@@ -15,23 +17,22 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
 public class CalendarView {
-    private ControlActionImpl controlAction;
+    private MangerImpl controlAction;
     private Scene scene;
     private Stage stage;
-    private TableView tableView;
+    private TableView<Room> tableView;
     private int roomId;
     private int roomPrice;
     private Date date;
     private String duration;
     private String[] selectStr;
 
-    public  void addCalendarStage(int roomId,int roomPrice, TableView tv){
+    void addCalendarStage(int roomId,int roomPrice, TableView<Room> tv){
         this.roomId = roomId;
         this.roomPrice = roomPrice;
         this.tableView = tv;
@@ -41,24 +42,19 @@ public class CalendarView {
         Label la2 = new Label("输入入住天数");
         Button btn = new Button("确认");
         scene = new Scene(gp,250,300);
-        ListView lv = new ListView();
+        ListView<String> lv = new ListView<>();
         TextField tf = MyTextField.accontTextField();
         date = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yy-MM-dd");
 
-        ObservableList ol= FXCollections.observableArrayList();
+        ObservableList<String> ol= FXCollections.observableArrayList();
         for(int i=0;i<7;i++){
             ol.add(sdf.format(date));
-            date.setTime(date.getTime()+86400000);
+            date.setTime(date.getTime()+ Constant.DAYTIME);
         }
         btn.setOnAction((ActionEvent)->{
             duration = tf.getText();
             scene.setRoot(addService());
-            try {
-               Date date1=sdf.parse((String) lv.getSelectionModel().getSelectedItem());
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
         });
         lv.setPrefSize(150,200);
         lv.setItems(ol);
@@ -71,7 +67,7 @@ public class CalendarView {
         stage.show();
     }
 
-    public VBox addService(){
+    private VBox addService(){
         String[] strings = new CustomServiceImpl().getServiceNames();
         selectStr = new String[strings.length];
         VBox vBox = new VBox(10);
@@ -90,7 +86,7 @@ public class CalendarView {
             });
         }
         btn.setOnAction((ActionEvent e)->{
-            controlAction = new ControlActionImpl();
+            controlAction = new MangerImpl();
             if(controlAction.creatOrder(this)){
                 MyAlert.setAlert("成功预定",1);
                 stage.close();
@@ -107,7 +103,7 @@ public class CalendarView {
         return duration;
     }
 
-    public TableView getTableView() {
+    public TableView<Room> getTableView() {
         return tableView;
     }
 

@@ -1,6 +1,6 @@
 package com.yzh.www.view;
 
-import com.yzh.www.controller.ControlActionImpl;
+import com.yzh.www.manger.MangerImpl;
 import com.yzh.www.entity.Account;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
@@ -16,7 +16,6 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -24,9 +23,8 @@ import java.util.List;
  */
 
 public class AccountView {
-    private ControlActionImpl controlAction;
     private Text text;
-    private ListView listView;
+    private ListView<TextArea> listView;
     private int choice;
 
     /**
@@ -34,7 +32,7 @@ public class AccountView {
      * @param choice 用于选择你要显示的是客户的账单还是酒店的账单
      * @return 返回包括账单界面的Stage对象
      */
-    public Stage creatStage(int choice){
+    Stage creatStage(int choice){
         this.choice = choice;
         Stage stage = new Stage();
         GridPane gp = new GridPane();
@@ -42,7 +40,7 @@ public class AccountView {
         Label lag = new Label();
         Label lat = new Label("总计：");
         HBox hBox = new HBox(10);
-        listView = new ListView();
+        listView = new ListView<>();
         text = new Text();
         ImageView imageView = new ImageView(new Image("\\Image\\account.png"));
 
@@ -65,9 +63,8 @@ public class AccountView {
      * 加载账单的数据
      */
     public void update(){
-        controlAction = new ControlActionImpl();
-        ArrayList arrayList =controlAction.loadAccount(choice);
-        List contence = new ArrayList();
+        ArrayList<Account> arrayList =new MangerImpl().loadAccount(choice);
+        List<TextArea> contence = new ArrayList<>();
         TextArea ta = new TextArea();
         ta.setEditable(false);
         ta.setWrapText(true);
@@ -75,14 +72,13 @@ public class AccountView {
         ta.setPrefHeight(350);
         StringBuilder sb = new StringBuilder();
             int sum=0;
-            for (Iterator ite = arrayList.iterator();ite.hasNext(); ) {
-                Account account = (Account) ite.next();
+            for (Account account:arrayList ) {
                 sb.append(account.toString());
                 sum +=(account.getMoney());
             }
         contence.add(ta);
         ta.setText(sb.toString());
-        text.setText(new Integer(sum).toString());
+        text.setText(Integer.toString(sum));
         listView.setItems(FXCollections.observableList(contence));
     }
 

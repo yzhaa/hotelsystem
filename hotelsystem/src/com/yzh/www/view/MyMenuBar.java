@@ -1,11 +1,12 @@
 package com.yzh.www.view;
+
+import javafx.scene.control.*;
 /**
  * 一个简单的菜单项，方便管理员，顾客界面都可以用到
  */
 
-import javafx.scene.control.*;
-public class MyMenuBar {
-    public MenuBar creatMenuBar(){
+ class MyMenuBar {
+     MenuBar creatMenuBar(){
         Menu menu1=new Menu("我的");
         MenuBar mb=new MenuBar();
         MenuItem mi1=new MenuItem("修改资料");

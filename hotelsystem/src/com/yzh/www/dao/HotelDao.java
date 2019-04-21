@@ -6,22 +6,17 @@ import java.util.ArrayList;
 
 public interface HotelDao {
 
-    public ArrayList<Hotel> findByName(String name);
+    ArrayList<Hotel> findByName(String name);
 
+    ArrayList<Hotel> findBytype(String type);
 
-    public ArrayList<Hotel> findBytype(String type);
+    ArrayList<Hotel> findAll();
 
-    public ArrayList<Hotel> findAll();
+    Hotel findById(int id);
 
+    void updata(Hotel hotel);
 
-    public Hotel findById(int id);
+    boolean delete(int id);
 
-
-    public boolean updata(Hotel hotel);
-
-
-    public boolean delete(int id);
-
-
-    public boolean creat(Hotel hotel);
+    void creat(Hotel hotel);
 }

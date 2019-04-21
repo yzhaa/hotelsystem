@@ -1,10 +1,13 @@
 package com.yzh.www.view;
 
-import com.yzh.www.controller.ControlActionImpl;
+import com.yzh.www.manger.MangerImpl;
 import com.yzh.www.entity.Hotel;
-import com.yzh.www.service.AdministratorServiceImpl;
+import com.yzh.www.serviceImpl.AdministratorServiceImpl;
+import com.yzh.www.util.Constant;
+import com.yzh.www.util.MyAlert;
 import com.yzh.www.util.MyTextField;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -24,9 +27,9 @@ import java.util.ArrayList;
  */
 
 public class AdministratorView {
-    private TableView tableView;
+    private TableView<Hotel>tableView;
     private int lastHotelId;
-    private ControlActionImpl controlAction;
+    private MangerImpl controlAction;
 
     /**
      * 对超级管理员布局的设置
@@ -51,28 +54,28 @@ public class AdministratorView {
      */
 
     public void update(){
-        ArrayList hotellist = new AdministratorServiceImpl().findAllHotel();
+        ArrayList<Hotel> hotellist = new AdministratorServiceImpl().findAllHotel();
         if(hotellist.size()!=0){
-            lastHotelId = ((Hotel) hotellist.get(hotellist.size()-1)).getId() ;
+            lastHotelId = ( hotellist.get(hotellist.size()-1)).getId() ;
         }
         tableView.refresh();
-        tableView.setItems(FXCollections.observableList(hotellist));
+        ObservableList<Hotel> data = FXCollections.observableList(hotellist);
+        tableView.setItems(FXCollections.observableList(data));
     }
 
     /**
      * 超级管理员界面左边那一块布局的设定
-     * @return
      */
 
-    public VBox leftVBox(){
+    private VBox leftVBox(){
         VBox vBox = new VBox(20);
         vBox.setPadding(new Insets(20));
         Button btn = new Button("修改资料");
         Label label = new Label();
         ImageView iv = new ImageView(new Image("\\Image\\administrator.jpg"));
-        btn.setOnAction((ActionEvent)->{
-            new ChangeInfoView(new AdministratorStorage()).addStage().show();
-        });
+        btn.setOnAction(event ->
+            new ChangeInfoView(new AdministratorStorage()).addStage().show());
+
         iv.setFitHeight(200);
         iv.setFitWidth(200);
         label.setGraphic(iv);
@@ -82,10 +85,9 @@ public class AdministratorView {
 
     /**
      * 超级管理员界面右边那一块的布局及设定
-     * @return
      */
 
-    public VBox RightVBox(){
+    private VBox RightVBox(){
         VBox vBox = new VBox(20);
         vBox.setAlignment(Pos.TOP_CENTER);
         vBox.setPadding(new Insets(20));
@@ -101,10 +103,10 @@ public class AdministratorView {
         addinfo.setPromptText("输入酒店信息");
 
         addButton.setOnAction((ActionEvent)->{
-            controlAction=new ControlActionImpl();
+            controlAction=new MangerImpl();
             Hotel hotel = new Hotel(lastHotelId + 1, addname.getText(), addtype.getText(), addinfo.getText(),
                     addManaAccont.getText());
-            if(controlAction.changeHotel(hotel, 3)){
+           if (cheack (controlAction.changeHotel(hotel, 3))==9){
                 addname.clear();
                 addinfo.clear();
                 addtype.clear();
@@ -127,12 +129,46 @@ public class AdministratorView {
      * @return 返回显示酒店信息的tableview
      */
 
-    public TableView creatFinalTv(){
+     int cheack(int result) {
+        switch (result) {
+            case 1:
+                MyAlert.setAlert("请填入完整信息并且酒店类型需为：\n" + Constant.FIVESTARS
+                        + "\\" + Constant.FOURSTARS + "\\" + Constant.THREESTARS + "\\" + Constant.CHEAPSTARS, 0);
+                break;
+            case 2:
+                MyAlert.setAlert("酒店类型需为：\n" + Constant.FIVESTARS + "\\" + Constant.FOURSTARS + "\\" +
+                        Constant.THREESTARS + "\\" + Constant.CHEAPSTARS, 0);
+                break;
+            case 3:
+                MyAlert.setAlert("无此管理员账户", 0);
+                break;
+            case 4:
+                MyAlert.setAlert("修改成功", 1);
+                break;
+            case 5:
+                MyAlert.setAlert("成功删除", 1);
+                break;
+            case 6:
+                MyAlert.setAlert("该酒店还有人住\n请先删除顾客的订单",0);
+                break;
+            case 7:
+                MyAlert.setAlert("无此管理员", 0);
+                break;
+            case 8:
+                MyAlert.setAlert("该管理员有酒店了", 0);
+                break;
+            case 9:
+                MyAlert.setAlert("创建成功", 1);
+        }
+        return result;
+    }
+
+    private TableView creatFinalTv(){
         MyTable myTable = new MyTable();
-        TableColumn tc = myTable.hotelDTC(this);
-        TableView tv = myTable.creatHTV();
-        ((TableColumn)tv.getColumns().get(2)).setMinWidth(200);
-        ((TableColumn)tv.getColumns().get(0)).setMinWidth(100);
+        TableColumn<Hotel,Button> tc = myTable.hotelDTC(this);
+        TableView<Hotel> tv = myTable.creatHTV();
+        (tv.getColumns().get(2)).setMinWidth(200);
+        (tv.getColumns().get(0)).setMinWidth(100);
         tv.setPrefWidth(540);
         tc.setPrefWidth(50);
         tc.setSortable(false);
@@ -140,7 +176,7 @@ public class AdministratorView {
         tableView =tv;
         tableView.setOnMouseClicked(event -> {
             if(event.getClickCount()==2){
-                changeHotel((Hotel) tv.getSelectionModel().getSelectedItem()).show();
+                changeHotel( tv.getSelectionModel().getSelectedItem()).show();
             }
         });
         return tv;
@@ -151,7 +187,7 @@ public class AdministratorView {
      * @param hotel 所要修改的酒店对象
      * @return 返回包含酒店信息设置界面的Stage对象
      */
-    public Stage changeHotel(Hotel hotel) {
+    private Stage changeHotel(Hotel hotel) {
             Stage stage=new Stage();
             GridPane gp = new GridPane();
             Scene scene = new Scene(gp);
@@ -159,11 +195,11 @@ public class AdministratorView {
             TextField tfname = new TextField();
             TextField tftype = new TextField();
             TextField tfinfo = new TextField();
-            TextField tfprice = MyTextField.priceField();
+            TextField tfaccont = MyTextField.accontTextField();
             tfname.setText(hotel.getName());
             tftype.setText(hotel.getType());
             tfinfo.setText(hotel.getInfo());
-            tfprice.setText(""+hotel.getManager().getAccont());
+            tfaccont.setText(""+hotel.getManager().getAccont());
             Label la1 = new Label("名字");
             Label la2 = new Label("类型");
             Label la3 = new Label("信息");
@@ -171,12 +207,12 @@ public class AdministratorView {
 
 
             button.setOnAction((ActionEvent e)->{
-                controlAction = new ControlActionImpl();
+                controlAction = new MangerImpl();
                 hotel.setName(tfname.getText());
                 hotel.setInfo(tfinfo.getText());
                 hotel.setType(tftype.getText());
-                hotel.setManagerAccont(tfprice.getText());
-                if( controlAction.changeHotel(hotel, 1)){
+                hotel.setManagerAccont(tfaccont.getText());
+                if( cheack(controlAction.changeHotel(hotel, 1))==4){
                     stage.close();
                 }
                 update();
@@ -186,7 +222,7 @@ public class AdministratorView {
             gp.setHgap(10);
             gp.setVgap(10);
             gp.addColumn(0,la1,la2,la3,la4);
-            gp.addColumn(1,tfname,tftype,tfinfo,tfprice);
+            gp.addColumn(1,tfname,tftype,tfinfo,tfaccont);
             gp.add(button,1,4);
             stage.setResizable(false);
             stage.setScene(scene);

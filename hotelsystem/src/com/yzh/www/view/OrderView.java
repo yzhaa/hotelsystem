@@ -1,10 +1,12 @@
 package com.yzh.www.view;
 
-import com.yzh.www.controller.ControlAction;
-import com.yzh.www.controller.ControlActionImpl;
+import com.yzh.www.manger.Manger;
+import com.yzh.www.manger.MangerImpl;
 import com.yzh.www.entity.Hotel;
 import com.yzh.www.entity.Order;
-import com.yzh.www.service.CustomServiceImpl;
+import com.yzh.www.entity.Room;
+import com.yzh.www.serviceImpl.CustomServiceImpl;
+import com.yzh.www.util.MyAlert;
 import com.yzh.www.util.MyTextField;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
@@ -19,23 +21,23 @@ import Storage.HotelStorage;
  */
 
 public class OrderView {
-    private ListView listView;
-    private TableView tableView;
-    private ControlAction controlAction;
+    private ListView<Order> listView;
+    private TableView<Room> tableView;
+    private Manger manger;
 
-    public OrderView() {
-        this.controlAction = new ControlActionImpl();
+    OrderView() {
+        this.manger = new MangerImpl();
     }
 
     /**
      * 订单界面的初始化等
      */
-    public   Stage creatEnrollStage(TableView tv,ListView lvp){
-        tableView=tv;
+    Stage creatEnrollStage(CustomView customView){
+        tableView=customView.getTableView();
         Stage stage=new Stage();
         GridPane gridPane=new GridPane();
         Scene scene=new Scene(gridPane);
-        listView = new ListView();
+        listView = new ListView<>();
         Button submit=new Button("提交评价");
         Button cancel=new Button("取消订单");
         TextField command = new TextField();
@@ -48,12 +50,26 @@ public class OrderView {
         listView.setItems(FXCollections.observableList(new CustomServiceImpl().findAllOrder()));
 
         cancel.setOnAction((ActionEvent)->{
-                controlAction.deleteOrder(this);
+        if(manger.deleteOrder(this)) {
+            MyAlert.setAlert("删除成功",1);
+        }
+        else {
+            MyAlert.setAlert("请选择要删除的订单", 0);
+        }
         });
+
         submit.setOnAction((ActionEvent)->{
-           controlAction.creatComment(command.getText(), point.getText(),
-                    (Order) listView.getSelectionModel().getSelectedItem());
-            controlAction.loadInfo(null, lvp);
+            switch (manger.creatComment(command.getText(), point.getText(),
+                     listView.getSelectionModel().getSelectedItem())){
+                case 1:
+                    MyAlert.setAlert("选择要评价的订单", 0);
+                    break;
+                case 2:MyAlert.setAlert("请输入评价的分数",0);
+                    break;
+                case 3:MyAlert.setAlert("评价成功",1);
+                    customView.update(customView.getHotelid());
+                    break;
+            }
         });
 
         gridPane.setPadding(new Insets(10));

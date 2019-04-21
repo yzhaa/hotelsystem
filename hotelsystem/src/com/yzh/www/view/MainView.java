@@ -1,7 +1,8 @@
 package com.yzh.www.view;
 
-import com.yzh.www.controller.ControlAction;
-import com.yzh.www.controller.ControlActionImpl;
+import com.yzh.www.manger.Manger;
+import com.yzh.www.manger.MangerImpl;
+import com.yzh.www.util.MyAlert;
 import com.yzh.www.util.MyTextField;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -19,45 +20,52 @@ import javafx.stage.Stage;
 
 
 public class MainView extends Application {
-    private ControlAction controlAction;
+    private Manger manger;
     private int choiceUser;
     private Stage  stage;
-    TextField textField;
-    PasswordField passwordField;
-    RadioButton radioButton;
+    private TextField textField;
+    private PasswordField passwordField;
+    private RadioButton radioButton;
 
     public static void main(String[] args) {
         Application.launch(args);
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage)  {
         stage=primaryStage;
         stage.setResizable(false);
         addMainScene(primaryStage);
     }
 
-    public HBox addoOerateHBox(){
+    private HBox addoOerateHBox(){
         HBox hBox=new HBox();
         Button button1=new Button("登入");
         Button  button2=new Button("注册");
 
         button1.setOnAction((ActionEvent e)->{
-            controlAction = new ControlActionImpl();
-            controlAction.login(choiceUser, textField.getText(), passwordField.getText(), stage, radioButton.isSelected());
+            manger = new MangerImpl();
+            switch (manger.login(choiceUser, textField.getText(), passwordField.getText(), stage,
+                    radioButton.isSelected())){
+                case 0:
+                MyAlert.setAlert("帐号或密码不正确或没无该类型帐号！",0);break;
+                case 1:stage.setTitle("Weaclome to here");break;
+                case 2:stage.setTitle("Weaclome Manager");break;
+                case 3:MyAlert.setAlert("该酒店管理员没有对应酒店\n需登陆管理员进行设置", 0);break;
+                case 4:stage.setTitle("Weaclome Administrator");break;
+            }
         });
 
-        button2.setOnAction((ActionEvent e)->{
-            new RegistView().addLogonStage().show();
-        });
+        button2.setOnAction((ActionEvent e)->
+            new RegistView().addLogonStage().show());
 
         hBox.setSpacing(50);
         hBox.getChildren().addAll(button2,button1);
         return hBox;
     }
 
-    public ChoiceBox addChoiceBox(){
-        ChoiceBox cb=new ChoiceBox(FXCollections.observableArrayList("顾客","管理员","超级管理员"));
+    private ChoiceBox addChoiceBox(){
+        ChoiceBox cb=new ChoiceBox<>(FXCollections.observableArrayList("顾客","管理员","超级管理员"));
         cb.getSelectionModel().selectedIndexProperty().addListener(((observable, oldValue, newValue) ->{
             switch (newValue.intValue()){
                 case 0:choiceUser=1; break;
@@ -68,7 +76,7 @@ public class MainView extends Application {
         return cb;
     }
 
-    public void addMainScene(Stage primaryStage){
+    private void addMainScene(Stage primaryStage){
         primaryStage.setTitle("TVHotel");
         GridPane pane=new GridPane();
         Scene scene=new Scene(pane,400, 300);
@@ -78,10 +86,10 @@ public class MainView extends Application {
         Label  label1=new Label("账号");
         Label  label2=new Label("密码");
         radioButton=new RadioButton("记住密码");
-        controlAction=new ControlActionImpl();
+        manger =new MangerImpl();
         
-        controlAction.getLoginInfo(textField,passwordField,radioButton);
-        text.setFont(Font.font("Tahoma", FontWeight.NORMAL,15));;
+        manger.getLoginInfo(textField,passwordField,radioButton);
+        text.setFont(Font.font("Tahoma", FontWeight.NORMAL,15));
         pane.setAlignment(Pos.TOP_CENTER);
         pane.setHgap(5);
         pane.setVgap(10);

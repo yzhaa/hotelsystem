@@ -1,5 +1,6 @@
 package com.yzh.www.util;
 
+import javafx.event.Event;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
@@ -14,15 +15,13 @@ public class MyTextField {
      */
         private static TextField BaseTextField() {
             TextField textField = new TextField();
-            textField.setOnInputMethodTextChanged(event ->  {
-                event.consume();
-            });
+            textField.setOnInputMethodTextChanged(Event::consume);
             return textField;
         }
 
     /**
      * 禁止输入非数字之外的其他东西，且规定长度小于1等于0
-     * @return
+     * @return  返回规定好输入的TextField
      */
     public static TextField accontTextField() {
 
@@ -43,7 +42,7 @@ public class MyTextField {
 
     /**
      * 禁止输入非数字之外的其他东西，且规定长度小于等于11
-     * @return
+     * @return 返回规定好输入的TextField
      */
     public  static TextField phoneNumberTextField() {
             TextField textField = BaseTextField();
@@ -64,16 +63,15 @@ public class MyTextField {
 
     /**
      * 禁止输入非数字之外的其他东西，且规定长度小于等于18
-     * @return
+     * @return 返回规定好输入的TextField
      */
     public static TextField idCardTextFile() {
 
             TextField textField = BaseTextField();
             textField.setOnKeyTyped(event ->  {
-                TextField tf = textField;
                 if (event.getCharacter().matches("[0-9]*")) {
-                    if(tf.getText()!=null){
-                        if (tf.getText().length() > 17) {
+                    if(textField.getText()!=null){
+                        if (textField.getText().length() > 17) {
                             event.consume();
                         }
                     }
@@ -87,19 +85,17 @@ public class MyTextField {
 
     /**
      * 禁止输入非数字之外的其他东西，且规定为1-10
-     * @return
+     * @return  返回规定好输入的TextField
      */
         public  static TextField pointTextField() {
             TextField textField = BaseTextField();
             textField.setOnKeyTyped(event ->  {
                 if (textField.getText().equals("")) {
-                    if (event.getCharacter().matches("[1-9]")) {
-                    } else {
+                    if (!event.getCharacter().matches("[1-9]")) {
                         event.consume();
                     }
                 } else if (textField.getText().equals("1")) {
-                    if (event.getCharacter().matches("[0]")) {
-                    } else {
+                    if (!event.getCharacter().matches("[0]")) {
                         event.consume();
                     }
                 } else {
@@ -112,18 +108,16 @@ public class MyTextField {
 
     /**
      * 规定密码 PasswordField输入的长度小于等于16
-     * @return
+     * @return 返回规定好输入的TextField
      */
     public static PasswordField passwordTextFiled(){
-            PasswordField textField = new PasswordField();
-            textField.setOnInputMethodTextChanged(event -> {
+        PasswordField textField = new PasswordField();
+        textField.setOnInputMethodTextChanged(Event::consume);
+        textField.setOnKeyTyped(event -> {
+            if (textField.getText().length() > 15) {
                 event.consume();
-            });
-            textField.setOnKeyTyped(event -> {
-                if(textField.getText().length()>15){
-                    event.consume();
-                }
-            });
+            }
+        });
             return textField;
         }
 
@@ -134,12 +128,13 @@ public class MyTextField {
         public static  TextField priceField(){
             TextField textField = BaseTextField();
             textField.setOnKeyTyped(event ->  {
-                TextField tf = textField;
                 if (event.getCharacter().matches("[0-9]*")) {
-
-                } else {
-                    event.consume();
-                }
+                    if (textField.getText() != null) {
+                        if (textField.getText().length() > 8) {
+                            event.consume();
+                        }
+                    }
+                } else event.consume();
             });
             return textField;
         }

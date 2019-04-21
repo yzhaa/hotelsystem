@@ -1,20 +1,18 @@
 package com.yzh.www.entity;
 
-import com.yzh.www.service.BaseServiceImpl;
+import com.yzh.www.serviceImpl.BaseServiceImpl;
 
 
 public class Comment {
     private int id;
     private String comment;
     private int point;
-    private int roomid;
     private Hotel hotel;
 
-    public Comment(int id, String comment, int point,int roomid,int hotelId) {
+    public Comment(int id, String comment, int point,int hotelId) {
         this.id = id;
         this.comment = comment;
         this.point = point;
-        this.roomid = roomid;
         this.hotel = new BaseServiceImpl().findHotel(hotelId);
     }
 
@@ -26,21 +24,6 @@ public class Comment {
         this.id = id;
     }
 
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
-    public int getPoint() {
-        return point;
-    }
-
-    public void setPoint(int point) {
-        this.point = point;
-    }
 
     public Hotel getHotel() {
         return hotel;
@@ -52,6 +35,6 @@ public class Comment {
 
     @Override
     public String toString() {
-        return "评价分数：" + this.point+"\n评价内容：" + this.getComment()+"\n\n" ;
+        return "评价分数：" + this.point+"\n评价内容：" + comment+"\n\n" ;
     }
 }

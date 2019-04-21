@@ -9,7 +9,7 @@ import com.yzh.www.entity.Hotel;
 public class HotelStorage {
     private static Hotel hotel;
 
-    public HotelStorage(){};
+    public HotelStorage(){}
 
     public  Hotel getHotel() {
         return hotel;

@@ -9,7 +9,7 @@ public interface UserDao {
      * @param user  包含新用户信息的User对象
      * @return  返回是否新增成功
      */
-    public boolean add(User user);
+     boolean add(User user);
 
     /**
      * 对用户修改信息存储到数据库
@@ -17,7 +17,7 @@ public interface UserDao {
      * @return 返回是否存储成功
      */
 
-    public boolean update(User user);
+     boolean update(User user);
 
     /**
      * 通过accont查找数据库中对应的用户信息
@@ -25,14 +25,14 @@ public interface UserDao {
      * @return 返回一个User对象，包含着要查找的信息
      */
 
-    public User findByAccont(int accont) ;
+     User findByAccont(int accont) ;
 
     /**
      * 通过id查找数据库中对应的用户信息
      * @param id  用户的id
      * @return  返回一个User对象，包含着要查找的信息
      */
-    public User findByid(int id);
+     User findByid(int id);
 
 }
 

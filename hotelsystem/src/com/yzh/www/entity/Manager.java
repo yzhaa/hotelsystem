@@ -1,6 +1,6 @@
 package com.yzh.www.entity;
 
-import com.yzh.www.service.BaseServiceImpl;
+import com.yzh.www.serviceImpl.BaseServiceImpl;
 
 /**
  * 管理员对应的实体类

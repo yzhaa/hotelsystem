@@ -1,5 +1,7 @@
 package com.yzh.www.dao;
 
+import com.yzh.www.entity.Account;
+
 import java.sql.Date;
 import java.util.ArrayList;
 
@@ -8,24 +10,21 @@ import java.util.ArrayList;
  */
 public interface AccountDao {
 
-
-    public static String formName=null;
-
-    public  void setFormName(String formName);
+      void setFormName(String formName);
 
     /**
      * 通过顾客找账单
      * @param customerId 顾客的id
      * @return  返回包含账单的集合
      */
-    public ArrayList findByCustomer(int customerId);
+     ArrayList<Account> findByCustomer(int customerId);
 
     /**
      * 通过酒店找账单
      * @param hotelId 酒店的id
      * @return 返回包含账单的集合
      */
-    public ArrayList findByHotel(int hotelId);
+     ArrayList<Account> findByHotel(int hotelId);
 
     /**
      *  添加一条账单
@@ -37,7 +36,7 @@ public interface AccountDao {
      * @return  返回创建是否成功的布尔值
      */
 
-    public Boolean insert(int hotelId, int roomId, int customerId, Date date, int money);
+     Boolean insert(int hotelId, int roomId, int customerId, Date date, int money);
 
     /**
      * 通过顾客的id和房间的id删除一个账单
@@ -45,6 +44,6 @@ public interface AccountDao {
      * @param customerId  顾客的id
      * @return  返回是否删除的布尔值
      */
-    public boolean delete(int roomId,int customerId);
+     boolean delete(int roomId,int customerId);
 
 }

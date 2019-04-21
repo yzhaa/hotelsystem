@@ -1,9 +1,10 @@
 package com.yzh.www.view;
 
-import com.yzh.www.controller.ControlAction;
-import com.yzh.www.controller.ControlActionImpl;
+import com.yzh.www.manger.Manger;
+import com.yzh.www.manger.MangerImpl;
 import com.yzh.www.entity.Hotel;
 import com.yzh.www.entity.Room;
+import com.yzh.www.factory.ServiceFactory;
 import com.yzh.www.util.Constant;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -24,18 +25,20 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import Storage.HotelStorage;
 import Storage.CustomerStorage;
-
 import java.util.ArrayList;
 
 
 public class CustomView {
-    private ControlAction controlAction;
-    private ArrayList arrayList;
-    private ListView lvService;
-    private Button button;
-    private Label label;
-    private ListView lVHotel;
-    private ListView lVpoint;
+    private Manger manger;
+    private int hotelid;
+    private ArrayList<Hotel> arrayList;
+    private ListView<TextArea> lvService;
+    private ListView<Hotel> lVHotel;
+    private ListView <TextArea>lVpoint;
+    private TextArea textAreaComment;
+    private TextArea textAreaService;
+    private ArrayList<TextArea> arealistService;
+    private ArrayList<TextArea> arealistComment;
     private TableView<Room> tableView;
     private Stage stage;
 
@@ -54,7 +57,7 @@ public class CustomView {
         return scene;
     }
 
-    public Scene secondScene() {
+    private Scene secondScene() {
         BorderPane borderPane = new BorderPane();
         Scene scene = new Scene(borderPane, 1000, 500);
         borderPane.setTop(addHBox(new CustomerStorage().getUser().getUserName()));
@@ -66,7 +69,7 @@ public class CustomView {
     }
 
 
-    public HBox addHBox(String userName) {
+    private HBox addHBox(String userName) {
         Label label = new Label("欢迎" + userName);
         HBox hBox = new HBox(10);
         hBox.setPadding(new Insets(10, 20, 10, 20));
@@ -76,10 +79,10 @@ public class CustomView {
     }
 
 
-    public VBox displayHotelVbox() {
+    private VBox displayHotelVbox() {
         VBox vBox = new VBox();
         Label la = new Label("酒店列表");
-        lVHotel = new ListView();
+        lVHotel = new ListView<>();
         lVHotel.setMaxHeight(250);
         lVHotel.setMaxWidth(150);
         vBox.setSpacing(10);
@@ -87,43 +90,44 @@ public class CustomView {
         vBox.getChildren().addAll(la, lVHotel);
         lVHotel.setOnMouseClicked(event -> {
             HotelStorage hf = new HotelStorage();
-            hf.setHotel(((Hotel) lVHotel.getSelectionModel().getSelectedItem()));
+            hf.setHotel(lVHotel.getSelectionModel().getSelectedItem());
             if (hf.getHotel() != null) {
-                controlAction = new ControlActionImpl();
+                hotelid = hf.getHotel().getId();
+                manger = new MangerImpl();
                 stage.setScene(secondScene());
-                controlAction.loadInfo(lvService, lVpoint);
+                update(hotelid);
             }
         });
         return vBox;
     }
 
-    public TableView creatTableView() {
+    private TableView creatTableView() {
         MyTable myTable = new MyTable();
-        controlAction = new ControlActionImpl();
+        manger = new MangerImpl();
         tableView = myTable.roomTV();
-        TableColumn<Room, String> tc = myTable.roomRTC(tableView);
+        TableColumn<Room, Button> tc = myTable.roomRTC(tableView);
         tc.setSortable(false);
         tc.setMaxWidth(50);
         tableView.getColumns().add(tc);
-        tableView.setItems(FXCollections.observableArrayList(controlAction.loadEmptyRoom()));
+        tableView.setItems(FXCollections.observableArrayList(manger.loadEmptyRoom()));
         return tableView;
     }
 
 
-    public GridPane addHotelGridPane() {
+    private GridPane addHotelGridPane() {
         ImageView imageView = new ImageView(new Image("\\Image\\hotel.jpg"));
         GridPane gp = new GridPane();
         Text text = new Text("       酒店查询");
         Label label = new Label("", imageView);
         TextField tf = new TextField();
-        ChoiceBox cb = new ChoiceBox();
+        ChoiceBox<String> cb = new ChoiceBox<>();
         Button button = new Button("查找");
         HBox hBox = new HBox();
         gp.setAlignment(Pos.TOP_CENTER);
         gp.setPadding(new Insets(20));
 
         button.setOnAction((ActionEvent e) -> {
-            arrayList = new ControlActionImpl().loadHotel(cb.getSelectionModel().getSelectedItem(), tf);
+            arrayList = ServiceFactory.getManger().loadHotel(cb.getSelectionModel().getSelectedItem(), tf);
             lVHotel.setItems(FXCollections.observableArrayList(arrayList));
         });
         gp.setVgap(30);
@@ -140,7 +144,7 @@ public class CustomView {
     }
 
 
-    public GridPane addGridPane() {
+    private GridPane addGridPane() {
         GridPane gp = new GridPane();
         gp.setPadding(new Insets(10, 10, 10, 10));
         gp.add(creatTableView(), 0, 2);
@@ -148,7 +152,7 @@ public class CustomView {
     }
 
 
-    public VBox addRightVBox() {
+    private VBox addRightVBox() {
         VBox vBox = new VBox();
         Label label = new Label("酒店服务");
         lvService = new ListView<>();
@@ -158,40 +162,72 @@ public class CustomView {
         return vBox;
     }
 
-    public VBox addTLeftVBox() {
+   void update(int hotelid) {
+       System.out.println(hotelid);
+        if(hotelid!=0){
+            textAreaService.setText( (String) ServiceFactory.getManger().loadService(2, hotelid).get(0));
+            lvService.setItems(FXCollections.observableArrayList(arealistService));
+            textAreaComment.setText((String)( ServiceFactory.getManger().loadComment(2,hotelid)).get(0));
+            lVpoint.setItems(FXCollections.observableArrayList(arealistComment));
+        }
+    }
+
+    private VBox addTLeftVBox() {
+        arealistComment = new ArrayList<>();
+        arealistService = new ArrayList<>();
         VBox vBox = addLeftVBox();
         vBox.setAlignment(Pos.TOP_LEFT);
         vBox.setPadding(new Insets(10));
         MyPointVBox mpvb = new MyPointVBox();
         mpvb.creatPointVBox();
+        Label label = mpvb.getLabel();
+        textAreaComment = new TextArea();
+        textAreaService = new TextArea();
+
+        Button button = new Button("返回");
         lVpoint = mpvb.getListView();
-        label = mpvb.getLabel();
-        button = new Button("返回");
+
+        textAreaComment.setEditable(false);
+        textAreaComment.setWrapText(true);
+        textAreaComment.setPrefWidth(180);
+        textAreaComment.setPrefHeight(250);
+        textAreaService.setWrapText(true);
+        textAreaService.setEditable(false);
+        textAreaService.setPrefWidth(180);
+        textAreaService.setPrefHeight(380);
+        arealistComment.add(textAreaComment);
+        arealistService.add(textAreaService);
         vBox.getChildren().addAll(label, lVpoint, button);
-        button.setOnAction((ActionEvent e) -> {
-            stage.setScene(fistScene());
-        });
+        button.setOnAction((ActionEvent e) ->
+                stage.setScene(fistScene()));
         return vBox;
     }
 
-    public VBox addLeftVBox() {
+    private VBox addLeftVBox() {
         VBox vBox = new VBox(20);
         vBox.setAlignment(Pos.TOP_CENTER);
         vBox.setPadding(new Insets(10, 40, 20, 20));
         MenuBar mb = new MyMenuBar().creatMenuBar();
         MenuItem mi3 = new MenuItem("查看订单");
         mb.getMenus().get(0).getItems().add(mi3);
-        mb.getMenus().get(0).getItems().get(0).setOnAction((ActionEvent e) -> {
-            new ChangeInfoView(new CustomerStorage()).addStage().show();
-        });
-        mb.getMenus().get(0).getItems().get(2).setOnAction((ActionEvent e) -> {
-            new OrderView().creatEnrollStage(tableView, lVpoint).show();
-        });
-        mb.getMenus().get(0).getItems().get(1).setOnAction((ActionEvent e) -> {
-            new AccountView().creatStage(1).show();
-        });
+        mb.getMenus().get(0).getItems().get(0).setOnAction((ActionEvent e) ->
+                new ChangeInfoView(new CustomerStorage()).addStage().show());
+
+        mb.getMenus().get(0).getItems().get(2).setOnAction((ActionEvent e) ->
+                new OrderView().creatEnrollStage(this).show());
+
+        mb.getMenus().get(0).getItems().get(1).setOnAction(event ->
+                new AccountView().creatStage(1).show());
+
         vBox.getChildren().add(mb);
         return vBox;
     }
 
+    TableView<Room> getTableView() {
+        return tableView;
+    }
+
+    public int getHotelid() {
+        return hotelid;
+    }
 }

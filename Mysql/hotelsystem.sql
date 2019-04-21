@@ -32,7 +32,7 @@ CREATE TABLE `administrator` (
 
 /*Data for the table `administrator` */
 
-insert  into `administrator`(`id`,`username`,`idcard`,`accont`,`password`,`phonenumber`) values (1,'超级管理员','',123,'123','');
+insert  into `administrator`(`id`,`username`,`idcard`,`accont`,`password`,`phonenumber`) values (1,'','',123,'123','');
 
 /*Table structure for table `comment` */
 
@@ -42,12 +42,10 @@ CREATE TABLE `comment` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `contence` varchar(200) DEFAULT NULL,
   `point` int(11) DEFAULT NULL,
-  `roomid` int(11) DEFAULT NULL,
   `hotelid` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `roomid` (`roomid`),
   KEY `hotelid` (`hotelid`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
 
 /*Data for the table `comment` */
 
@@ -64,7 +62,7 @@ CREATE TABLE `cus_ser` (
   KEY `customerid` (`customerid`),
   KEY `roomid` (`roomid`),
   KEY `serviceid` (`serviceid`)
-) ENGINE=InnoDB AUTO_INCREMENT=48 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=55 DEFAULT CHARSET=utf8;
 
 /*Data for the table `cus_ser` */
 
@@ -80,7 +78,7 @@ CREATE TABLE `customer` (
   `password` varchar(20) DEFAULT NULL,
   `phonenumber` varchar(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8;
 
 /*Data for the table `customer` */
 
@@ -96,7 +94,7 @@ CREATE TABLE `customeraccount` (
   `date` date DEFAULT NULL,
   `money` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=75 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=97 DEFAULT CHARSET=utf8;
 
 /*Data for the table `customeraccount` */
 
@@ -127,7 +125,7 @@ CREATE TABLE `hotelaccount` (
   `date` date DEFAULT NULL,
   `money` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=48 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=70 DEFAULT CHARSET=utf8;
 
 /*Data for the table `hotelaccount` */
 
@@ -145,7 +143,7 @@ CREATE TABLE `manager` (
   `hotelid` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `hotelid` (`hotelid`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 
 /*Data for the table `manager` */
 
@@ -162,7 +160,7 @@ CREATE TABLE `order` (
   PRIMARY KEY (`id`),
   KEY `customerid` (`customerid`),
   KEY `roomid` (`roomid`)
-) ENGINE=InnoDB AUTO_INCREMENT=68 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=81 DEFAULT CHARSET=utf8;
 
 /*Data for the table `order` */
 
@@ -181,7 +179,7 @@ CREATE TABLE `room` (
   PRIMARY KEY (`id`),
   KEY `root` (`hotelid`),
   KEY `whoes` (`customerid`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8;
 
 /*Data for the table `room` */
 
@@ -192,12 +190,12 @@ DROP TABLE IF EXISTS `service`;
 CREATE TABLE `service` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(50) DEFAULT NULL,
-  `price` int(11) DEFAULT NULL,
+  `price` bigint(50) DEFAULT NULL,
   `content` varchar(200) DEFAULT NULL,
   `hotelid` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `hotelid` (`hotelid`)
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8;
 
 /*Data for the table `service` */
 
