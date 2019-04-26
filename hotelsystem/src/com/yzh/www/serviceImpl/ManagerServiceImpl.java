@@ -85,7 +85,7 @@ public class ManagerServiceImpl implements ManagerService {
         if(service==null){
             return 0;
         }
-        if(!new CusSerDaoImpl().isService(service.getId())){
+        if(!DaoFactory.getCusSerDao() .isService(service.getId())){
             serviceDao = DaoFactory.getServiceDao();
            serviceDao.delete(service.getId());
            return 1;

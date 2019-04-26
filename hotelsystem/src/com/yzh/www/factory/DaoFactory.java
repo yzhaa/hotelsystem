@@ -15,6 +15,7 @@ public class DaoFactory {
     private static OrderDao orderDao;
     private static RoomDao roomDao;
     private static ServiceDao serviceDao;
+    private static BaseDao baseDao;
 
 
     public static CustomerAccountDao getCustomerAccountDao(){
@@ -93,4 +94,12 @@ public class DaoFactory {
         }
         return serviceDao;
     }
+
+    public static BaseDao getBaseDao(){
+        if (baseDao == null) {
+            baseDao = new BaseDao();
+        }
+        return baseDao;
+    }
+
 }

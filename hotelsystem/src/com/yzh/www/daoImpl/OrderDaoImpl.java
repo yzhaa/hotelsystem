@@ -3,29 +3,27 @@ package com.yzh.www.daoImpl;
 
 import com.yzh.www.dao.OrderDao;
 import com.yzh.www.entity.Order;
+import com.yzh.www.factory.DaoFactory;
+
 import java.sql.Date;
 import java.util.ArrayList;
 
 public class OrderDaoImpl implements OrderDao {
-    private BaseDao baseDao = new BaseDao();
+    private BaseDao baseDao = DaoFactory.getBaseDao();
 
     public ArrayList<Order> findByCustomerId(int customerId){
-        Object[] objects = {customerId};
-        return baseDao.getList(Order.class, objects, "select * from `order` where customerid=?");
+        return baseDao.getList(Order.class,  "select * from `order` where customerid=?",customerId);
     }
 
     public ArrayList<Order> findByRoomId(int roomId){
-        Object[] objects = {roomId};
-        return baseDao.getList(Order.class, objects, "select * from `order` where roomid=?");
+        return baseDao.getList(Order.class, "select * from `order` where roomid=?",roomId);
     }
 
     public void insertOrder( int customerId,int roomId, java.sql.Date dateFrom, Date dateTo){
-        Object[] objects = {customerId, roomId, dateFrom, dateTo};
-        baseDao.insert("insert into `order` (customerid ,roomid , datefrom ,dateto) values(?,?,?,?)", objects);
+        baseDao.insert("insert into `order` (customerid ,roomid , datefrom ,dateto) values(?,?,?,?)", customerId, roomId, dateFrom, dateTo);
     }
 
     public boolean delete(int id) {
-        Object[] objects = {id};
-        return baseDao.delete("delete from `order` where id=?",objects);
+        return baseDao.delete("delete from `order` where id=?",id);
     }
 }

@@ -2,6 +2,8 @@ package com.yzh.www.daoImpl;
 
 import com.yzh.www.dao.AccountDao;
 import com.yzh.www.entity.Account;
+import com.yzh.www.factory.DaoFactory;
+
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -10,7 +12,7 @@ import java.util.ArrayList;
  */
 public class AccountDaoImpl implements AccountDao {
     private  String formName;
-    private BaseDao baseDao = new BaseDao();
+    private BaseDao baseDao = DaoFactory.getBaseDao();
 
     /**
      * 存储账单的名 ，因为有管理员和顾客账单
@@ -26,8 +28,7 @@ public class AccountDaoImpl implements AccountDao {
      * @return  返回包含账单的集合
      */
     public ArrayList<Account> findByCustomer(int customerId){
-        Object[] objects = {customerId};
-        return baseDao.getList(Account.class, objects, "select * from " + formName + " where customerid =?");
+        return baseDao.getList(Account.class,"select * from " + formName + " where customerid =?" ,customerId );
     }
 
     /**
@@ -36,8 +37,7 @@ public class AccountDaoImpl implements AccountDao {
      * @return 返回包含账单的集合
      */
     public ArrayList<Account> findByHotel(int hotelId){
-        Object[] objects = {hotelId};
-        return baseDao.getList(Account.class, objects, "select * from " + formName + " where hotelid=?");
+        return baseDao.getList(Account.class, "select * from " + formName + " where hotelid=?",hotelId);
     }
 
     /**
@@ -51,9 +51,8 @@ public class AccountDaoImpl implements AccountDao {
      */
 
     public Boolean insert(int hotelId, int roomId, int customerId, Date date, int money) {
-        Object[] objects = {hotelId, roomId, customerId,date, money};
         return baseDao.insert("insert into " + formName + " (hotelid,roomid ,customerid ,date,money) " +
-                "values(?,?,?,?,?)", objects);
+                "values(?,?,?,?,?)",hotelId, roomId, customerId,date, money);
     }
 
     /**
@@ -63,12 +62,10 @@ public class AccountDaoImpl implements AccountDao {
      * @return  返回是否删除的布尔值
      */
     public boolean delete(int roomId,int customerId){
-        Object[] objects = {roomId, customerId};
-        return baseDao.delete("delete from " + formName + " where roomid=? and customerid=?", objects);
+        return baseDao.delete("delete from " + formName + " where roomid=? and customerid=?", roomId, customerId);
     }
 
     public boolean delete(int hotelid) {
-        Object[] objects = {hotelid};
-        return baseDao.delete("delete from " + formName + " where hotelid=?",objects);
+        return baseDao.delete("delete from " + formName + " where hotelid=?",hotelid);
     }
 }

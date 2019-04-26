@@ -3,12 +3,13 @@ package com.yzh.www.daoImpl;
 import com.yzh.www.dao.UserDao;
 import com.yzh.www.entity.Administrator;
 import com.yzh.www.entity.User;
+import com.yzh.www.factory.DaoFactory;
 
 import java.util.ArrayList;
 
 
 public class AdministratorUserDaoImpl implements UserDao {
-    private BaseDao baseDao = new BaseDao();
+    private BaseDao baseDao = DaoFactory.getBaseDao();
     @Override
     public boolean add(User user) {
         return false;
@@ -17,8 +18,8 @@ public class AdministratorUserDaoImpl implements UserDao {
 
     @Override
     public User findByAccont(int accont)  {
-        Object[] objects = {accont};
-        ArrayList<Administrator> arrayList = baseDao.getList(Administrator.class, objects, "select * from administrator where accont=?");
+        ArrayList<Administrator> arrayList = baseDao.getList(Administrator.class,  "select * from administrator where" +
+                " accont=?",accont);
         if(arrayList.size()>0){
             return arrayList.get(0);
         }
@@ -26,8 +27,8 @@ public class AdministratorUserDaoImpl implements UserDao {
     }
     @Override
     public boolean update(User user)  {
-        Object[] objects = {user.getUserName(), user.getIdCard(), user.getPassword(), user.getPhoneNumber(), user.getId()};
-        return baseDao.update("update administrator set username=?,idcard=? password=?,phonenumber=?  where id=?", objects);
+        return baseDao.update("update administrator set username=?,idcard=? password=?,phonenumber=?  where id=?",
+                user.getUserName(), user.getIdCard(), user.getPassword(), user.getPhoneNumber(), user.getId());
     }
 
     @Override

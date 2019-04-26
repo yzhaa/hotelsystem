@@ -1,4 +1,4 @@
-package com.yzh.www.db;
+package com.yzh.www.util;
 
 
 import java.io.FileInputStream;
@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.Properties;
 
-public class MyDatabasePool {
+ class MyDatabasePool {
     private static String driver;
     private static String url;
     private static String user;
@@ -33,7 +33,7 @@ public class MyDatabasePool {
         }
     }
 
-    public MyDatabasePool() {
+     MyDatabasePool() {
         for (int i = 0; i < 10; i++) {
             connPool.addLast(creatConnection());
         }
@@ -52,12 +52,12 @@ public class MyDatabasePool {
         return conn;
     }
 
-    public Connection getConnection() {
+    Connection getConnection() {
         if(connPool.size()>0){
             return connPool.removeFirst();
         } else throw new RuntimeException("数据库连接池中没有数据库连接");
 }
-    public void FreeConnection (Connection conn){
+     void FreeConnection (Connection conn){
         connPool.addLast(conn);
     }
 }

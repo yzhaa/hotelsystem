@@ -1,7 +1,6 @@
 package com.yzh.www.util;
 
 
-import com.yzh.www.db.MyDatabasePool;
 import java.sql.*;
 
 
